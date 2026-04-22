@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interacciones Alimento–Fármaco · Dr. Juan Serna</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0f1a;
+    --surface: #111827;
+    --surface2: #1a2336;
+    --border: rgba(255,255,255,0.07);
+    --text: #e8edf5;
+    --muted: #7b8aa0;
+    --accent1: #3b82f6;
+    --accent2: #06b6d4;
+    --accent3: #10b981;
+    --accent4: #f59e0b;
+    --accent5: #ef4444;
+    --accent6: #8b5cf6;
+    --red: #ef4444;
+    --green: #10b981;
+    --amber: #f59e0b;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.65;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: linear-gradient(135deg, #0d1b3e 0%, #0a1628 50%, #061020 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 60px 40px 50px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 70% 60% at 50% -10%, rgba(59,130,246,0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  header::after {
+    content: '';
+    position: absolute; bottom: 0; left: 10%; right: 10%; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent1), var(--accent2), transparent);
+  }
+  .header-tag {
+    display: inline-block;
+    background: rgba(59,130,246,0.12);
+    border: 1px solid rgba(59,130,246,0.3);
+    color: var(--accent2);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+  }
+  header h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(28px, 5vw, 52px);
+    font-weight: 800;
+    line-height: 1.1;
+    background: linear-gradient(135deg, #fff 0%, #93c5fd 50%, #67e8f9 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+  }
+  header .subtitle {
+    color: var(--muted);
+    font-size: 15px;
+    font-weight: 300;
+    margin-bottom: 8px;
+  }
+  header .author {
+    color: var(--accent2);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,15,26,0.92);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  nav::-webkit-scrollbar { display: none; }
+  .nav-btn {
+    background: none; border: none; cursor: pointer;
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 16px 18px;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .nav-btn:hover { color: var(--text); }
+  .nav-btn.active {
+    color: var(--accent2);
+    border-bottom-color: var(--accent2);
+  }
+
+  /* ── MAIN ── */
+  main { max-width: 1100px; margin: 0 auto; padding: 48px 24px 80px; }
+
+  /* ── SECTIONS ── */
+  .section { display: none; animation: fadeIn 0.35s ease; }
+  .section.active { display: block; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+  /* ── SECTION HEADINGS ── */
+  .section-header {
+    display: flex; align-items: center; gap: 16px;
+    margin-bottom: 36px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-icon {
+    width: 48px; height: 48px;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+  .section-header h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 26px; font-weight: 700;
+  }
+  .section-header p { color: var(--muted); font-size: 14px; margin-top: 3px; }
+
+  /* ── RISK CARDS (intro) ── */
+  .risk-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+  .risk-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 22px;
+    display: flex; gap: 16px; align-items: flex-start;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .risk-card:hover { border-color: rgba(59,130,246,0.3); transform: translateY(-2px); }
+  .risk-card .emoji { font-size: 28px; line-height: 1; }
+  .risk-card h3 { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; margin-bottom: 5px; }
+  .risk-card p { color: var(--muted); font-size: 13px; line-height: 1.5; }
+
+  /* ── DRUG ACCORDION ── */
+  .drug-group { margin-bottom: 12px; }
+  .drug-header {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 22px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .drug-header:hover { border-color: rgba(255,255,255,0.15); background: var(--surface2); }
+  .drug-header.open { border-radius: 14px 14px 0 0; border-bottom-color: transparent; }
+  .drug-header-left { display: flex; align-items: center; gap: 14px; }
+  .drug-badge {
+    font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 6px;
+  }
+  .drug-header h3 { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; }
+  .drug-header .drug-subtitle { color: var(--muted); font-size: 12px; margin-top: 2px; }
+  .chevron { color: var(--muted); transition: transform 0.25s; font-size: 18px; flex-shrink: 0; }
+  .drug-header.open .chevron { transform: rotate(180deg); }
+
+  .drug-body {
+    background: var(--surface2);
+    border: 1px solid var(--border); border-top: none;
+    border-radius: 0 0 14px 14px;
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.35s ease;
+  }
+  .drug-body.open { max-height: 2000px; }
+  .drug-body-inner { padding: 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media(max-width:640px) { .drug-body-inner { grid-template-columns: 1fr; } }
+
+  /* ── PILL LISTS ── */
+  .pill-section h4 {
+    font-family: 'Syne', sans-serif;
+    font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .pill-list { list-style: none; display: flex; flex-direction: column; gap: 7px; }
+  .pill-list li {
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.45;
+    display: flex; align-items: flex-start; gap: 8px;
+  }
+  .pill-list li::before { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+  .ok li { background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2); }
+  .ok h4 { color: var(--green); }
+  .ok li::before { content: '✓'; color: var(--green); }
+  .warn li { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); }
+  .warn h4 { color: var(--red); }
+  .warn li::before { content: '✕'; color: var(--red); }
+  .info li { background: rgba(59,130,246,0.07); border: 1px solid rgba(59,130,246,0.18); }
+  .info h4 { color: var(--accent1); }
+  .info li::before { content: '→'; color: var(--accent1); }
+  .amber-list li { background: rgba(245,158,11,0.07); border: 1px solid rgba(245,158,11,0.2); }
+  .amber-list h4 { color: var(--amber); }
+  .amber-list li::before { content: '⚠'; color: var(--amber); }
+
+  /* ── TABLES ── */
+  .data-table {
+    width: 100%; border-collapse: collapse;
+    font-size: 13px;
+    margin-top: 20px;
+  }
+  .data-table thead tr {
+    background: rgba(59,130,246,0.1);
+    border-bottom: 1px solid rgba(59,130,246,0.25);
+  }
+  .data-table th {
+    text-align: left; padding: 12px 14px;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+    color: var(--accent2);
+  }
+  .data-table td { padding: 11px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:hover td { background: rgba(255,255,255,0.02); }
+  .tag-evitar { color: var(--red); font-weight: 600; font-size: 11px; }
+  .tag-limitar { color: var(--amber); font-weight: 600; font-size: 11px; }
+  .tag-moderar { color: var(--accent2); font-weight: 600; font-size: 11px; }
+  .tag-libre { color: var(--green); font-weight: 600; font-size: 11px; }
+  .tag-muy-alto { background: rgba(239,68,68,0.15); color: var(--red); padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+  .tag-alto { background: rgba(245,158,11,0.15); color: var(--amber); padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+  .tag-moderado { background: rgba(59,130,246,0.15); color: var(--accent1); padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+  .tag-bajo { background: rgba(16,185,129,0.15); color: var(--green); padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+
+  /* ── ALERT BOXES ── */
+  .alert {
+    border-radius: 12px; padding: 16px 20px;
+    display: flex; gap: 14px; align-items: flex-start;
+    margin-bottom: 16px;
+  }
+  .alert-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+  .alert-body strong { display: block; font-size: 14px; margin-bottom: 3px; }
+  .alert-body p { font-size: 13px; color: var(--muted); }
+  .alert.danger { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25); }
+  .alert.warning { background: rgba(245,158,11,0.07); border: 1px solid rgba(245,158,11,0.2); }
+  .alert.success { background: rgba(16,185,129,0.07); border: 1px solid rgba(16,185,129,0.2); }
+  .alert.info { background: rgba(59,130,246,0.07); border: 1px solid rgba(59,130,246,0.2); }
+
+  /* ── STEPS ── */
+  .steps { display: flex; flex-direction: column; gap: 14px; }
+  .step { display: flex; gap: 18px; align-items: flex-start; }
+  .step-num {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent1), var(--accent2));
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif; font-weight: 800; font-size: 14px;
+    flex-shrink: 0;
+  }
+  .step-content { padding-top: 6px; }
+  .step-content strong { display: block; font-size: 14px; margin-bottom: 3px; }
+  .step-content p { color: var(--muted); font-size: 13px; }
+
+  /* ── ROL CARDS ── */
+  .rol-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+  .rol-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .rol-card:hover { border-color: rgba(6,182,212,0.3); transform: translateY(-2px); }
+  .rol-card .rol-icon { font-size: 28px; margin-bottom: 14px; }
+  .rol-card h3 { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; margin-bottom: 7px; }
+  .rol-card p { color: var(--muted); font-size: 13px; line-height: 1.5; }
+
+  /* ── ALCOHOL TABLE ── */
+  .alcohol-table td:nth-child(3) { color: var(--red); font-weight: 500; font-size: 12px; }
+
+  /* ── QUOTE ── */
+  .final-quote {
+    background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(6,182,212,0.08));
+    border: 1px solid rgba(6,182,212,0.2);
+    border-left: 4px solid var(--accent2);
+    border-radius: 16px;
+    padding: 32px 36px;
+    text-align: center;
+    margin-top: 48px;
+  }
+  .final-quote blockquote {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(18px, 3vw, 24px);
+    font-weight: 700;
+    font-style: italic;
+    color: var(--text);
+    line-height: 1.4;
+    margin-bottom: 14px;
+  }
+  .final-quote p { color: var(--muted); font-size: 14px; }
+
+  /* ── DIVIDERS ── */
+  .divider { height: 1px; background: var(--border); margin: 32px 0; }
+  .subsection-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px; font-weight: 700;
+    margin: 32px 0 16px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .subsection-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* ── NUTRIENT TABLE ── */
+  .nutrient-table { font-size: 13px; }
+  .nutrient-table td:first-child { font-weight: 600; color: var(--accent2); }
+
+  /* ── FULL WIDTH PILL LIST ── */
+  .full-pill { grid-column: 1 / -1; }
+
+  /* ── RESPONSIVE ── */
+  @media(max-width:768px) {
+    header { padding: 40px 20px 36px; }
+    main { padding: 32px 16px 60px; }
+    .section-header h2 { font-size: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-tag">Nutrición y Dietética · UCM</div>
+  <h1>Interacciones<br>Alimento – Fármaco</h1>
+  <p class="subtitle">Enfermedades Osteoarticulares, Autoinmunes · Sistema Digestivo y Genitourinario</p>
+  <p class="author">Dr. Juan David Serna · Universidad Católica de Manizales</p>
+</header>
+
+<nav>
+  <button class="nav-btn active" onclick="show('riesgo')">Factores de Riesgo</button>
+  <button class="nav-btn" onclick="show('reumato')">Reumatología</button>
+  <button class="nav-btn" onclick="show('gastro')">Digestivo & Urinario</button>
+  <button class="nav-btn" onclick="show('alcohol')">Alcohol</button>
+  <button class="nav-btn" onclick="show('nutricionista')">Rol del Nutricionista</button>
+</nav>
+
+<main>
+
+<!-- ══════════════════════════════════════════════
+     SECCIÓN 1: FACTORES DE RIESGO
+══════════════════════════════════════════════ -->
+<div id="riesgo" class="section active">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(59,130,246,0.12);">⚡</div>
+    <div>
+      <h2>Factores que Aumentan el Riesgo de Interacción</h2>
+      <p>Condiciones clínicas y hábitos que predisponen a interacciones alimento–fármaco</p>
+    </div>
+  </div>
+
+  <div class="risk-grid">
+    <div class="risk-card">
+      <div class="emoji">👴</div>
+      <div>
+        <h3>Edad Avanzada</h3>
+        <p>Cambios en absorción, metabolismo y excreción. Polifarmacia frecuente.</p>
+      </div>
+    </div>
+    <div class="risk-card">
+      <div class="emoji">💊</div>
+      <div>
+        <h3>Polifarmacia</h3>
+        <p>Más de 5 medicamentos simultáneos incrementan exponencialmente el riesgo.</p>
+      </div>
+    </div>
+    <div class="risk-card">
+      <div class="emoji">🍷</div>
+      <div>
+        <h3>Hábitos Alimentarios</h3>
+        <p>Consumo de alcohol, toronja (CYP3A4), suplementos herbales o dietas extremas.</p>
+      </div>
+    </div>
+    <div class="risk-card">
+      <div class="emoji">🏥</div>
+      <div>
+        <h3>Enfermedades Crónicas</h3>
+        <p>Insuficiencia renal, hepática o GI alteran la farmacocinética del fármaco.</p>
+      </div>
+    </div>
+    <div class="risk-card">
+      <div class="emoji">🧬</div>
+      <div>
+        <h3>Variabilidad Genética</h3>
+        <p>Polimorfismos en CYP450 determinan metabolizadores lentos o rápidos.</p>
+      </div>
+    </div>
+    <div class="risk-card">
+      <div class="emoji">🥗</div>
+      <div>
+        <h3>Estado Nutricional</h3>
+        <p>Desnutrición o malabsorción modifican distribución y eliminación.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="alert danger" style="margin-top:32px;">
+    <div class="alert-icon">🚫</div>
+    <div class="alert-body">
+      <strong>La Toronja y el CYP3A4</strong>
+      <p>La toronja inhibe la enzima CYP3A4 del citocromo P450, aumentando los niveles plasmáticos de múltiples fármacos (colchicina, corticoides, IBP, entre otros). Debe evitarse siempre que se use cualquiera de estos medicamentos.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SECCIÓN 2: REUMATOLOGÍA
+══════════════════════════════════════════════ -->
+<div id="reumato" class="section">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(139,92,246,0.12);">🦴</div>
+    <div>
+      <h2>Enfermedades Osteoarticulares y Autoinmunes</h2>
+      <p>AINEs · Metotrexato · Prednisona · Sulfasalazina · Leflunomida · Colchicina · Bifosfonatos</p>
+    </div>
+  </div>
+
+  <!-- AINEs -->
+  <div class="drug-group">
+    <div class="drug-header" onclick="toggle(this)">
+      <div class="drug-header-left">
+        <span class="drug-badge" style="background:rgba(239,68,68,0.12);color:#f87171;">AINEs</span>
+        <div>
+          <h3>ibuprofeno · naproxeno · diclofenaco</h3>
+          <div class="drug-subtitle">Artritis, dolor osteoarticular</div>
+        </div>
+      </div>
+      <span class="chevron">⌄</span>
+    </div>
+    <div class="drug-body">
+      <div class="drug-body-inner">
+        <div class="pill-section ok">
+          <h4>✓ Recomendaciones</h4>
+          <ul class="pill-list">
+            <li>Tomar SIEMPRE con alimentos (reduce irritación gástrica)</li>
+            <li>Evitar tomar en ayunas</li>
+            <li>Preferir: arroz, pan, papa — alimentos de fácil digestión</li>
+            <li>Dieta anti-inflamatoria: omega-3, cúrcuma, jengibre</li>
+            <li>Hidratación adecuada (protección renal)</li>
+          </ul>
+        </div>
+        <div class="pill-section warn">
+          <h4>✕ Evitar / Precaución</h4>
+          <ul class="pill-list">
+            <li>Alcohol → ↑ riesgo hemorragia gástrica</li>
+            <li>Sodio elevado → retención de líquidos</li>
+            <li>Cafeína → potencia efectos adversos GI</li>
+            <li>Potasio alto si hay insuficiencia renal</li>
+          </ul>
+        </div>
+        <div class="full-pill" style="grid-column: 1/-1;">
+          <div class="subsection-title" style="margin-top:8px;">Impacto sobre Estado Nutricional</div>
+          <table class="data-table nutrient-table">
+            <thead><tr><th>Nutriente</th><th>Efecto del AINE</th><th>Acción del nutricionista</th></tr></thead>
+            <tbody>
+              <tr><td>Hierro</td><td>Pérdida por microhemorragias GI</td><td>Monitorear hemoglobina; aumentar fuentes de hierro hemo</td></tr>
+              <tr><td>Vitamina C</td><td>Puede reducir niveles plasmáticos en inflamación crónica</td><td>Incluir cítricos, pimentón, brócoli</td></tr>
+              <tr><td>Ácido fólico</td><td>Interfiere con metabolismo del folato</td><td>Legumbres, verduras de hoja verde oscuro</td></tr>
+              <tr><td>Sodio</td><td>Retención hídrica, HTA</td><td>Restringir a &lt;2 g/día en uso crónico</td></tr>
+              <tr><td>Potasio</td><td>Riesgo de hiperpotasemia renal</td><td>Monitorear si hay nefropatía asociada</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Metotrexato -->
+  <div class="drug-group">
+    <div class="drug-header" onclick="toggle(this)">
+      <div class="drug-header-left">
+        <span class="drug-badge" style="background:rgba(139,92,246,0.12);color:#a78bfa;">MTX</span>
+        <div>
+          <h3>Metotrexato</h3>
+          <div class="drug-subtitle">Artritis Reumatoide · Lupus</div>
+        </div>
+      </div>
+      <span class="chevron">⌄</span>
+    </div>
+    <div class="drug-body">
+      <div class="drug-body-inner">
+        <div class="pill-section info" style="grid-column:1/-1;">
+          <h4>Mecanismo relevante</h4>
+          <ul class="pill-list">
+            <li>Favorece acumulación de adenosina → efecto antiinflamatorio</li>
+            <li>Reduce replicación de linfocitos T y B al interferir con metabolismo del folato y síntesis de purinas/pirimidinas</li>
+          </ul>
+        </div>
+        <div class="pill-section ok">
+          <h4>✓ Recomendaciones</h4>
+          <ul class="pill-list">
+            <li>Ácido fólico: SIEMPRE suplementar (MTX lo agota)</li>
+            <li>Hidratación abundante (protege riñón)</li>
+            <li>Vitamina B12: monitorear periódicamente</li>
+          </ul>
+        </div>
+        <div class="pill-section warn">
+          <h4>✕ Evitar</h4>
+          <ul class="pill-list">
+            <li>Alcohol: PROHIBIDO — hepatotoxicidad severa</li>
+            <li>Lácteos: retrasan absorción oral</li>
+            <li>Cafeína: puede antagonizar efectos terapéuticos</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Corticoides -->
+  <div class="drug-group">
+    <div class="drug-header" onclick="toggle(this)">
+      <div class="drug-header-left">
+        <span class="drug-badge" style="background:rgba(245,158,11,0.12);color:#fbbf24;">GC</span>
+        <div>
+          <h3>Corticoides — Prednisona</h3>
+          <div class="drug-subtitle">Artritis Reumatoide · Lupus · Uso crónico</div>
+        </div>
+      </div>
+      <span class="chevron">⌄</span>
+    </div>
+    <div class="drug-body">
+      <div class="drug-body-inner">
+        <div class="pill-section ok">
+          <h4>✓ Plan nutricional</h4>
+          <ul class="pill-list">
+            <li>Calcio: 1200–1500 mg/día (pérdida ósea)</li>
+            <li>Vitamina D: 800–1000 UI/día</li>
+            <li>Potasio: 3500–4700 mg/día (plátano, papa, legumbres)</li>
+            <li>Proteínas: 1.2–1.5 g/kg/día (catabolismo muscular)</li>
+            <li>Carbohidratos complejos, bajo índice glucémico</li>
+            <li>Grasas ≤30% VCT; ↑ omega-3</li>
+            <li>Magnesio: nueces, semillas</li>
+          </ul>
+        </div>
+        <div class="pill-section warn">
+          <h4>✕ Restricciones</h4>
+          <ul class="pill-list">
+            <li>Sodio: &lt;1500 mg/día (retención hídrica)</li>
+            <li>Azúcares simples: limitar (elevan glicemia)</li>
+            <li>Alcohol: evitar</li>
+            <li>Toronja: PROHIBIDA — inhibe CYP3A4</li>
+            <li>Glucosa: monitorear constantemente</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sulfasalazina & Leflunomida -->
+  <div class="drug-group">
+    <div class="drug-header" onclick="toggle(this)">
+      <div class="drug-header-left">
+        <span class="drug-badge" style="background:rgba(16,185,129,0.12);color:#34d399;">DMARD</span>
+        <div>
+          <h3>Sulfasalazina & Leflunomida</h3>
+          <div class="drug-subtitle">Lupus · Artritis Reumatoide</div>
+        </div>
+      </div>
+      <span class="chevron">⌄</span>
+    </div>
+    <div class="drug-body">
+      <div class="drug-body-inner">
+        <div>
+          <div class="pill-section info" style="margin-bottom:12px;">
+            <h4>Sulfasalazina — mecanismo</h4>
+            <ul class="pill-list">
+              <li>5-aminosalicilato (mesalazina): efecto antiinflamatorio intestinal</li>
+              <li>Sulfapiridina: efecto sistémico en artritis</li>
+            </ul>
+          </div>
+          <div class="pill-section ok" style="margin-bottom:12px;">
+            <h4>✓ Sulfasalazina</h4>
+            <ul class="pill-list">
+              <li>Tomar CON alimentos (reduce náusea)</li>
+              <li>Ácido fólico: suplementar (bloquea su absorción)</li>
+              <li>Hierro: separar 2 horas (quelación)</li>
+              <li>Hidratación abundante (previene cristaluria)</li>
+              <li>Vitamina B12: monitorear en uso prolongado</li>
+            </ul>
+          </div>
+          <div class="pill-section warn">
+            <h4>✕ Sulfasalazina</h4>
+            <ul class="pill-list">
+              <li>Alcohol: aumenta hepatotoxicidad — EVITAR</li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <div class="pill-section ok" style="margin-bottom:12px;">
+            <h4>✓ Leflunomida</h4>
+            <ul class="pill-list">
+              <li>Tomar a la misma hora cada día</li>
+              <li>Vitamina K: precaución si combina con warfarina</li>
+              <li>Vigilar peso (causa pérdida involuntaria)</li>
+              <li>Antioxidantes: vitaminas E y C pueden modular toxicidad</li>
+            </ul>
+          </div>
+          <div class="pill-section warn">
+            <h4>✕ Leflunomida</h4>
+            <ul class="pill-list">
+              <li>Alcohol: PROHIBIDO — hepatotoxicidad grave</li>
+              <li>Suplementos herbales: EVITAR</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidroxicloroquina -->
+  <div class="drug-group">
+    <div class="drug-header" onclick="toggle(this)">
+      <div class="drug-header-left">
+        <span class="drug-badge" style="background:rgba(6,182,212,0.12);color:#22d3ee;">HCQ</span>
+        <div>
+          <h3>Hidroxicloroquina</h3>
+          <div class="drug-subtitle">Lupus · Artritis Reumatoide</div>
+        </div>
+      </div>
+      <span class="chevron">⌄</span>
+    </div>
+    <div class="drug-body">
+      <div class="drug-body-inner">
+        <div class="pill-section ok">
+          <h4>✓ Recomendaciones</h4>
+          <ul class="pill-list">
+            <li>Tomar con alimentos (reduce náuseas y dispepsia)</li>
+            <li>Puede mejorar sensibilidad a la insulina</li>
+            <li>Promover patrón alimentario rico en antioxidantes</li>
+          </ul>
+        </div>
+        <div class="pill-section amber-list">
+          <h4>⚠ Vigilar</h4>
+          <ul class="pill-list">
+            <li>Riesgo de hipoglucemia si usa antidiabéticos concomitantes</li>
+            <li>Molestias digestivas pueden reducir ingesta calórica</li>
+            <li>Toxicidad retiniana con uso prolongado (promover antioxidantes)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gota -->
+  <div class="drug-group">
+    <div class="drug-header" onclick="toggle(this)">
+      <div class="drug-header-left">
+        <span class="drug-badge" style="background:rgba(245,158,11,0.12);color:#fbbf24;">GOTA</span>
+        <div>
+          <h3>Gota — Colchicina & Alopurinol</h3>
+          <div class="drug-subtitle">Dieta baja en purinas · Acido úrico</div>
+        </div>
+      </div>
+      <span class="chevron">⌄</span>
+    </div>
+    <div class="drug-body">
+      <div class="drug-body-inner">
+        <div class="pill-section info" style="grid-column:1/-1;">
+          <h4>Fisiopatología clave</h4>
+          <ul class="pill-list">
+            <li>Purinas → Hipoxantina → Xantina → Ácido úrico (xantina oxidasa)</li>
+            <li>Al degradarse adenina y guanina se produce ácido úrico</li>
+            <li>Cuando supera su solubilidad, precipita como cristales de urato monosódico en articulaciones → dolor, enrojecimiento, calor, inflamación</li>
+          </ul>
+        </div>
+        <div class="pill-section warn">
+          <h4>✕ Alimentos a LIMITAR (purinas altas)</h4>
+          <ul class="pill-list">
+            <li>Vísceras: hígado, riñón, sesos</li>
+            <li>Mariscos: anchoas, sardinas, mejillones</li>
+            <li>Alcohol (especialmente cerveza)</li>
+            <li>Fructosa alta: bebidas azucaradas, jugos</li>
+            <li>Carnes rojas en exceso</li>
+          </ul>
+        </div>
+        <div class="pill-section ok">
+          <h4>✓ Colchicina / Alopurinol</h4>
+          <ul class="pill-list">
+            <li>Hidratación 2–3 L/día (excreción de urato)</li>
+            <li>Vitamina C: puede reducir ácido úrico</li>
+            <li>Tomar colchicina CON alimentos (GI)</li>
+            <li>Lácteos bajos en grasa: favorecen excreción</li>
+            <li>Café moderado: efecto protector documentado</li>
+            <li>Toronja: EVITAR con colchicina (toxicidad)</li>
+          </ul>
+        </div>
+        <div class="full-pill" style="grid-column:1/-1;">
+          <div class="subsection-title" style="margin-top:8px;">Contenido de Purinas en Alimentos</div>
+          <table class="data-table">
+            <thead><tr><th>Nivel</th><th>Alimentos (mg purinas/100g)</th><th>Recomendación</th></tr></thead>
+            <tbody>
+              <tr><td><span class="tag-muy-alto">MUY ALTO &gt;300 mg</span></td><td>Hígado, riñón, anchoas, sardinas, extracto de carne</td><td><span class="tag-evitar">EVITAR completamente</span></td></tr>
+              <tr><td><span class="tag-alto">ALTO 150–300 mg</span></td><td>Carnes rojas, cerdo, mariscos, espárragos, coliflor</td><td><span class="tag-limitar">Limitar 1–2 porciones/sem</span></td></tr>
+              <tr><td><span class="tag-moderado">MODERADO 50–150 mg</span></td><td>Pollo, pescado blanco, legumbres, espinaca, champiñones</td><td><span class="tag-moderar">Consumo moderado, evaluar</span></td></tr>
+              <tr><td><span class="tag-bajo">BAJO &lt;50 mg</span></td><td>Lácteos, huevos, frutas, cereales, verduras (mayoría)</td><td><span class="tag-libre">Consumo libre y recomendado</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bifosfonatos -->
+  <div class="drug-group">
+    <div class="drug-header" onclick="toggle(this)">
+      <div class="drug-header-left">
+        <span class="drug-badge" style="background:rgba(16,185,129,0.12);color:#34d399;">BIS</span>
+        <div>
+          <h3>Bifosfonatos — Alendronato · Risedronato</h3>
+          <div class="drug-subtitle">Osteoporosis</div>
+        </div>
+      </div>
+      <span class="chevron">⌄</span>
+    </div>
+    <div class="drug-body">
+      <div class="drug-body-inner">
+        <div class="pill-section amber-list">
+          <h4>⚠ Indicaciones de ingesta CRÍTICAS</h4>
+          <ul class="pill-list">
+            <li>Tomar en AYUNAS con 200 mL de agua al levantarse</li>
+            <li>Permanecer ERGUIDO 30–60 min (prevenir esofagitis)</li>
+            <li>NO comer ni beber nada más por 30–60 minutos</li>
+            <li>Calcio: no tomar simultáneamente (separar 2 horas)</li>
+            <li>Café, jugo, leche: inhiben absorción hasta un 60%</li>
+          </ul>
+        </div>
+        <div class="pill-section ok">
+          <h4>✓ Plan nutricional</h4>
+          <ul class="pill-list">
+            <li>Calcio: 1200–1500 mg/día (lácteos, sardinas, brócoli)</li>
+            <li>Vitamina D: 800–1000 UI/día</li>
+            <li>Proteína adecuada: previene sarcopenia</li>
+            <li>Magnesio: nueces, semillas, cereales integrales</li>
+            <li>Fósforo: equilibrar con calcio (relación 1:1)</li>
+            <li>Alcohol y tabaco: evitar — aceleran pérdida ósea</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SECCIÓN 3: DIGESTIVO & URINARIO
+══════════════════════════════════════════════ -->
+<div id="gastro" class="section">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(16,185,129,0.12);">🫁</div>
+    <div>
+      <h2>Sistema Digestivo y Genitourinario</h2>
+      <p>Mesalazina · Colestiramina · Metoclopramida · Nitrofurantoína · Tamsulosina · IBP · Metformina</p>
+    </div>
+  </div>
+
+  <div class="alert info">
+    <div class="alert-icon">📌</div>
+    <div class="alert-body">
+      <strong>Tipos de alteraciones GI por fármacos</strong>
+      <p>Los fármacos pueden afectar el aparato digestivo modificando el apetito (↑ corticoides / ↓ metformina), alterando la percepción gustativa u olfativa (metronidazol → sabor metálico), o provocando náusea, vómito y malabsorción de nutrientes.</p>
+    </div>
+  </div>
+
+  <!-- Aceite Mineral -->
+  <div class="drug-group">
+    <div class="drug-header" onclick="toggle(this)">
+      <div class="drug-header-left">
+        <span class="drug-badge" style="background:rgba(107,114,128,0.2);color:#9ca3af;">LAX</span>
+        <div>
+          <h3>Aceite Mineral & Laxantes Estimulantes</h3>
+          <div class="drug-subtitle">Estreñimiento</div>
+        </div>
+      </div>
+      <span class="chevron">⌄</span>
+    </div>
+    <div class="drug-body">
+      <div class="drug-body-inner">
+        <div>
+          <div class="pill-section warn" style="margin-bottom:12px;">
+            <h4>✕ Aceite mineral</h4>
+            <ul class="pill-list">
+              <li>Consumir separado de comidas (mínimo 2 horas)</li>
+              <li>Interfiere con vitaminas liposolubles (A, D, E, K)</li>
+              <li>Riesgo de neumonía lipoidea si se aspira</li>
+              <li>NO recomendado en ancianos ni con disfagia</li>
+            </ul>
+          </div>
+          <div class="pill-section ok">
+            <h4>✓ Aceite mineral</h4>
+            <ul class="pill-list">
+              <li>Complementar con vitaminas liposolubles</li>
+              <li>Monitorear vitamina D (osteoporosis crónica)</li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <div class="pill-section ok" style="margin-bottom:12px;">
+            <h4>✓ Laxantes estimulantes (senósidos)</h4>
+            <ul class="pill-list">
+              <li>Tomarse después de los alimentos</li>
+              <li>Dieta rica en fibra soluble (avena, legumbres)</li>
+            </ul>
+          </div>
+          <div class="pill-section warn">
+            <h4>✕ Laxantes estimulantes</h4>
+            <ul class="pill-list">
+              <li>Puede ocasionar desequilibrio electrolítico</li>
+              <li>Vigilar potasio, sodio, magnesio</li>
+              <li>Restituir líquidos y electrolitos activamente</li>
+              <li>Evitar uso crónico → dependencia colónica</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidróxido de Aluminio -->
+  <div class="drug-group">
+    <div class="drug-header" onclick="toggle(this)">
+      <div class="drug-header-left">
+        <span class="drug-badge" style="background:rgba(107,114,128,0.2);color:#9ca3af;">Al(OH)₃</span>
+        <div>
+          <h3>Gel de Hidróxido de Aluminio</h3>
+          <div class="drug-subtitle">Antiácido y quelante de fosfato</div>
+        </div>
+      </div>
+      <span class="chevron">⌄</span>
+    </div>
+    <div class="drug-body">
+      <div class="drug-body-inner">
+        <div class="full-pill" style="grid-column:1/-1;">
+          <table class="data-table">
+            <thead><tr><th>Problema nutricional</th><th>Mecanismo</th><th>Consecuencia clínica</th><th>Acción</th></tr></thead>
+            <tbody>
+              <tr><td>Mala absorción fósforo</td><td>Forma complejos insolubles con fosfato</td><td>Hipofosfatemia → osteomalacia</td><td>Vigilar fósforo; aportar lácteos, frutos secos</td></tr>
+              <tr><td>Mala absorción vitamina A</td><td>Adsorción de vitamina A liposoluble</td><td>Deficiencia visual e inmune</td><td>Hígado, zanahoria, mango; monitorear retinol</td></tr>
+              <tr><td>Anorexia secundaria</td><td>Efecto directo sobre motilidad GI</td><td>Reducción ingesta calórica total</td><td>Comidas frecuentes y pequeñas; evaluar suplemento</td></tr>
+              <tr><td>Estreñimiento</td><td>Efecto astringente del aluminio</td><td>Impactación fecal en ancianos</td><td>Fibra, hidratación; rotar con antiácidos de Mg</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- IBP -->
+  <div class="drug-group">
+    <div class="drug-header" onclick="toggle(this)">
+      <div class="drug-header-left">
+        <span class="drug-badge" style="background:rgba(59,130,246,0.12);color:#60a5fa;">IBP</span>
+        <div>
+          <h3>Inhibidores de Bomba de Protones</h3>
+          <div class="drug-subtitle">Omeprazol · Pantoprazol</div>
+        </div>
+      </div>
+      <span class="chevron">⌄</span>
+    </div>
+    <div class="drug-body">
+      <div class="drug-body-inner">
+        <div class="pill-section amber-list">
+          <h4>⚠ Indicaciones de ingesta</h4>
+          <ul class="pill-list">
+            <li>Tomar 30 min ANTES del desayuno (máxima eficacia)</li>
+            <li>Reducen el pH gástrico → afectan absorción de minerales</li>
+            <li>No fraccionar ni masticar cápsulas de liberación</li>
+            <li>Consistencia en el horario mejora el control</li>
+          </ul>
+        </div>
+        <div class="pill-section warn">
+          <h4>✕ Evitar</h4>
+          <ul class="pill-list">
+            <li>Toronja: EVITAR — inhibe metabolismo CYP3A4</li>
+            <li>Alcohol: irrita la mucosa — reducir al máximo</li>
+          </ul>
+        </div>
+        <div class="full-pill" style="grid-column:1/-1;">
+          <div class="subsection-title" style="margin-top:8px;">Impacto nutricional en uso crónico</div>
+          <table class="data-table nutrient-table">
+            <thead><tr><th>Nutriente</th><th>Problema</th><th>Acción</th></tr></thead>
+            <tbody>
+              <tr><td>Vitamina B12</td><td>Agota reservas</td><td>Suplementar anualmente</td></tr>
+              <tr><td>Magnesio</td><td>Hipomagnesemia</td><td>Monitorear regularmente</td></tr>
+              <tr><td>Calcio</td><td>Absorción reducida con carbonato</td><td>Preferir citrato de calcio</td></tr>
+              <tr><td>Hierro</td><td>Absorción reducida (menor acidez)</td><td>Vigilar hemoglobina</td></tr>
+              <tr><td>Zinc</td><td>Deficiencia en adultos mayores</td><td>Monitorear en uso crónico</td></tr>
+              <tr><td>Vitamina C</td><td>Acidez reducida afecta absorción</td><td>Incluir cítricos con las comidas</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Náusea / Estreñimiento nutricional -->
+  <div class="drug-group">
+    <div class="drug-header" onclick="toggle(this)">
+      <div class="drug-header-left">
+        <span class="drug-badge" style="background:rgba(16,185,129,0.12);color:#34d399;">NUTRI</span>
+        <div>
+          <h3>Manejo Nutricional de Síntomas GI</h3>
+          <div class="drug-subtitle">Náusea, vómito, estreñimiento, distensión</div>
+        </div>
+      </div>
+      <span class="chevron">⌄</span>
+    </div>
+    <div class="drug-body">
+      <div class="drug-body-inner">
+        <div class="pill-section ok">
+          <h4>✓ Náusea y Vómito</h4>
+          <ul class="pill-list">
+            <li>Dar alimentos fríos (menor olor)</li>
+            <li>Incrementar líquidos entre comidas</li>
+            <li>Alimentos secos al levantarse (galletas, tostadas)</li>
+            <li>Evitar líquidos durante las comidas</li>
+            <li>Comidas pequeñas cada 2–3 horas</li>
+          </ul>
+        </div>
+        <div class="pill-section ok">
+          <h4>✓ Estreñimiento y Distensión</h4>
+          <ul class="pill-list">
+            <li>Incrementar fibra (25–38 g/día)</li>
+            <li>Hidratación: mínimo 2 L/día</li>
+            <li>Ejercicio regular: estimula peristaltismo</li>
+            <li>Comidas pequeñas y frecuentes</li>
+            <li>Probióticos: pueden ayudar en estreñimiento crónico</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Metoclopramida & Nitrofurantoína -->
+  <div class="drug-group">
+    <div class="drug-header" onclick="toggle(this)">
+      <div class="drug-header-left">
+        <span class="drug-badge" style="background:rgba(6,182,212,0.12);color:#22d3ee;">MTC/NIT</span>
+        <div>
+          <h3>Metoclopramida & Nitrofurantoína</h3>
+          <div class="drug-subtitle">Procinético / Infección urinaria</div>
+        </div>
+      </div>
+      <span class="chevron">⌄</span>
+    </div>
+    <div class="drug-body">
+      <div class="drug-body-inner">
+        <div>
+          <div class="pill-section ok" style="margin-bottom:12px;">
+            <h4>✓ Metoclopramida</h4>
+            <ul class="pill-list">
+              <li>Tomar 30 min ANTES de las comidas (máx. efecto)</li>
+              <li>Comidas pequeñas y frecuentes optimizan respuesta</li>
+            </ul>
+          </div>
+          <div class="pill-section warn">
+            <h4>✕ Metoclopramida</h4>
+            <ul class="pill-list">
+              <li>Acelera vaciamiento: modifica absorción de otros fármacos</li>
+              <li>Alcohol: potencia sedación SNC — EVITAR</li>
+              <li>Cafeína: puede reducir efecto procinético</li>
+              <li>No usar &gt;3 meses (riesgo discinesia tardía)</li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <div class="pill-section ok" style="margin-bottom:12px;">
+            <h4>✓ Nitrofurantoína</h4>
+            <ul class="pill-list">
+              <li>Tomar CON alimentos: ↑ absorción y ↓ náusea</li>
+              <li>Hidratación 2–3 L/día (esencial para eliminar bacteria)</li>
+              <li>Vitamina C: puede ayudar a acidificar la orina</li>
+            </ul>
+          </div>
+          <div class="pill-section warn">
+            <h4>✕ Nitrofurantoína</h4>
+            <ul class="pill-list">
+              <li>Magnesio (antiácidos): reduce absorción — separar 2h</li>
+              <li>Vitamina B12: monitorear (neuropatía en uso prolongado)</li>
+              <li>Alcohol: aumenta efectos adversos GI — EVITAR</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tamsulosina -->
+  <div class="drug-group">
+    <div class="drug-header" onclick="toggle(this)">
+      <div class="drug-header-left">
+        <span class="drug-badge" style="background:rgba(139,92,246,0.12);color:#a78bfa;">α1B</span>
+        <div>
+          <h3>Tamsulosina</h3>
+          <div class="drug-subtitle">Hiperplasia prostática · Vías urinarias</div>
+        </div>
+      </div>
+      <span class="chevron">⌄</span>
+    </div>
+    <div class="drug-body">
+      <div class="drug-body-inner">
+        <div class="pill-section ok">
+          <h4>✓ Recomendaciones</h4>
+          <ul class="pill-list">
+            <li>Tomar CON el desayuno siempre (misma comida del día)</li>
+            <li>Reduce pico de absorción y riesgo de mareos</li>
+            <li>Hidratación 2 L/día (favorece vaciamiento vesical)</li>
+            <li>Evitar líquidos en exceso 2h antes de dormir</li>
+          </ul>
+        </div>
+        <div class="pill-section warn">
+          <h4>✕ Evitar</h4>
+          <ul class="pill-list">
+            <li>Alcohol: EVITAR — potencia hipotensión (caídas, síncope)</li>
+            <li>Sodio alto: retención hídrica aumenta síntomas</li>
+            <li>Cafeína: irrita vejiga (limitar &lt;2 tazas/día)</li>
+            <li>Picante: irritante vesical</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SECCIÓN 4: ALCOHOL
+══════════════════════════════════════════════ -->
+<div id="alcohol" class="section">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(239,68,68,0.12);">🍺</div>
+    <div>
+      <h2>Alcohol — Factor de Riesgo Más Frecuente</h2>
+      <p>El alcohol altera CYP450, aumenta permeabilidad intestinal, potencia efectos sedantes y es hepatotóxico</p>
+    </div>
+  </div>
+
+  <div class="alert danger">
+    <div class="alert-icon">⚠️</div>
+    <div class="alert-body">
+      <strong>Mecanismo General del Alcohol</strong>
+      <p>Inhibe o induce enzimas CYP450 (especialmente CYP2E1), aumenta la permeabilidad intestinal, potencia efectos sedantes del SNC y genera toxicidad hepática aditiva con múltiples fármacos.</p>
+    </div>
+  </div>
+
+  <table class="data-table alcohol-table" style="margin-top:24px;">
+    <thead><tr><th>Fármaco</th><th>Tipo de interacción</th><th>Riesgo clínico</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Metotrexato</strong></td><td>Hepatotoxicidad aditiva</td><td>Fibrosis hepática, cirrosis</td></tr>
+      <tr><td><strong>Leflunomida</strong></td><td>Hepatotoxicidad aditiva</td><td>Daño hepático agudo grave</td></tr>
+      <tr><td><strong>Metformina</strong></td><td>Acidosis láctica</td><td>🚨 Emergencia médica — mortal</td></tr>
+      <tr><td><strong>AINEs</strong></td><td>Hemorragia GI</td><td>Úlcera, hemorragia digestiva</td></tr>
+      <tr><td><strong>Warfarina</strong></td><td>Inhibe metabolismo</td><td>↑ anticoagulación → sangrado</td></tr>
+      <tr><td><strong>Nitrofurantoína</strong></td><td>↑ toxicidad GI</td><td>Náusea, vómito, diarrea</td></tr>
+      <tr><td><strong>Tamsulosina</strong></td><td>Hipotensión aditiva</td><td>Caídas, síncope en ancianos</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SECCIÓN 5: ROL DEL NUTRICIONISTA
+══════════════════════════════════════════════ -->
+<div id="nutricionista" class="section">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(6,182,212,0.12);">🥼</div>
+    <div>
+      <h2>Rol del Nutricionista</h2>
+      <p>Competencias clínicas en el paciente polimedicado</p>
+    </div>
+  </div>
+
+  <div class="rol-grid">
+    <div class="rol-card">
+      <div class="rol-icon">🔍</div>
+      <h3>Identificar riesgos</h3>
+      <p>Detectar medicamentos con alto riesgo de interacción en el plan alimentario del paciente.</p>
+    </div>
+    <div class="rol-card">
+      <div class="rol-icon">📋</div>
+      <h3>Ajustar la dieta</h3>
+      <p>Modificar la alimentación sin comprometer la eficacia del tratamiento médico prescrito.</p>
+    </div>
+    <div class="rol-card">
+      <div class="rol-icon">💊</div>
+      <h3>Orientar la ingesta</h3>
+      <p>Indicar el momento óptimo de toma del fármaco respecto a las comidas (antes, durante, después).</p>
+    </div>
+    <div class="rol-card">
+      <div class="rol-icon">📊</div>
+      <h3>Monitorear deficiencias</h3>
+      <p>Detectar y corregir deficiencias nutricionales inducidas por medicamentos (B12, folato, Fe, Ca, Mg, D, Zn).</p>
+    </div>
+    <div class="rol-card">
+      <div class="rol-icon">🎓</div>
+      <h3>Educación al paciente</h3>
+      <p>Enseñar al paciente y familia sobre alimentos que interactúan con sus medicamentos específicos.</p>
+    </div>
+    <div class="rol-card">
+      <div class="rol-icon">🤝</div>
+      <h3>Trabajo en equipo</h3>
+      <p>Colaborar con médicos y farmacéuticos para decisiones terapéuticas seguras e integrales.</p>
+    </div>
+  </div>
+
+  <div class="subsection-title" style="margin-top:40px;">Evaluación Nutricional en el Paciente Polimedicado</div>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <strong>Historia farmacológica completa</strong>
+        <p>Listar TODOS los medicamentos incluyendo suplementos, herbales y automedicación</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <strong>Recordatorio de 24 horas</strong>
+        <p>Identificar alimentos que interactúan con los fármacos en la dieta habitual del paciente</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <strong>Evaluación de deficiencias</strong>
+        <p>Solicitar: B12, folato, Fe, Ca, Mg, vitamina D, Zn según fármacos en uso</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <strong>Intervención dietética</strong>
+        <p>Ajustar distribución de alimentos según horarios de medicación del paciente</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <strong>Educación y adherencia</strong>
+        <p>Entregar material educativo simple sobre qué comer, cuándo y qué evitar</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">6</div>
+      <div class="step-content">
+        <strong>Seguimiento y monitoreo</strong>
+        <p>Evaluar cambios clínicos, laboratoriales y ajustar plan cada 4–8 semanas</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="final-quote">
+    <blockquote>"Lo que el paciente come es tan importante<br>como lo que el médico prescribe."</blockquote>
+    <p>El nutricionista es el profesional clave para prevenir interacciones alimento–fármaco y proteger el estado nutricional del paciente en tratamiento farmacológico.</p>
+    <p style="margin-top:12px;font-size:12px;color:rgba(123,138,160,0.7);">Dr. Juan David Serna · Universidad Católica de Manizales</p>
+  </div>
+</div>
+
+</main>
+
+<script>
+  function show(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    const btns = document.querySelectorAll('.nav-btn');
+    const ids = ['riesgo','reumato','gastro','alcohol','nutricionista'];
+    btns[ids.indexOf(id)].classList.add('active');
+  }
+
+  function toggle(header) {
+    const body = header.nextElementSibling;
+    const isOpen = header.classList.contains('open');
+    // close all in same container
+    header.closest('main').querySelectorAll('.drug-header.open').forEach(h => {
+      h.classList.remove('open');
+      h.nextElementSibling.classList.remove('open');
+    });
+    if (!isOpen) {
+      header.classList.add('open');
+      body.classList.add('open');
+    }
+  }
+</script>
+</body>
+</html>
